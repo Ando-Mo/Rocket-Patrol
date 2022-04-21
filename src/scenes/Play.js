@@ -23,25 +23,42 @@ class Play extends Phaser.Scene {
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0,0);
 
         //green UI 
-        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0);
-
-        //white border
-        this.add.rectangle(0,0,game.config.width, borderUISize, 0xFFFFFF).setOrigin(0,0);
-        this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
-
-        this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
-        this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
-
-        //add rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'dart').setOrigin(0.5, 0);
+        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0)
 
         //add spaceships of varying point values & positions: 
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship_idle', 9, 30).setOrigin(0,0);
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship_idle', 0, 20).setOrigin(0,0);
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship_idle', 0, 10).setOrigin(0,0);
 
+        //reconifigure size and shape of spaceships (fish)
+        this.ship01.scale *= 1.5;
+        this.ship01.width *= 1.5;
+        this.ship01.height *= 1.5;
+
+        this.ship02.scale *= 1.5;
+        this.ship02.width *= 1.5;
+        this.ship02.height *= 1.5;
+
+        this.ship03.scale *= 1.5;
+        this.ship03.width *= 1.5;
+        this.ship03.height *= 1.5;
+
+         //white border
+         this.add.rectangle(0,0,game.config.width, borderUISize, 0xFFFFFF).setOrigin(0,0);
+         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
+ 
+         this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
+         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
+        //add rocket
+        this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'dart').setOrigin(0.5, 0);
+
         //add clown
-        this.clown01 = new Clown(this, game.config.width - borderUISize*3, borderUISize*6, 'clown_throw', 1).setOrigin(0); 
+        this.clown01 = new Clown(this, game.config.width - borderUISize*3, borderUISize*6, 'clown_throw', 1).setOrigin(0.25,0.25); 
+
+        //reconfigure clown size
+        this.clown01.scale *= 1.1;
+        this.clown01.width *= 1.1;
+        this.clown01.height *= 1.1;
 
         //define keys: 
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -142,6 +159,10 @@ class Play extends Phaser.Scene {
             this.shipExplode(this.ship01);
         }
 
+        this.getThrown(this.ship01);
+        this.getThrown(this.ship02);
+        this.getThrown(this.ship03);
+
     }
 
     checkCollision(rocket, ship){
@@ -156,7 +177,14 @@ class Play extends Phaser.Scene {
             return false;
         }
     }
-
+    getThrown(ship){
+        //input a ship, and see if the clown needs to be moved to that position
+        if(ship.x == game.config.width - borderUISize*3){
+            this.clown01.x = ship.x; 
+            this.clown01.y = ship.y;
+            ship.alpha = 1;
+        }
+    }
     shipExplode(ship){
         //temporarily hide ship
         ship.alpha = 0; 
@@ -165,7 +193,6 @@ class Play extends Phaser.Scene {
         boom.anims.play('explode'); //play explode animation
         boom.on('animationcomplete', () => { //callback after animation completes
             ship.reset(); //reset ship position
-            ship.alpha = 1;  //make ship visible again
             boom.destroy(); //remove explosion sprite
         });
         //score add & repaint
