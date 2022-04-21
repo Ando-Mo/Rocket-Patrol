@@ -13,3 +13,10 @@ let borderPadding = borderUISize / 3;
 
 //reserve keyboard variables: 
 let keyF, keyR, keyLEFT, keyRIGHT;
+
+
+//CHANGES:
+
+//increased rocket speed
+//changed Rocket asset to be a dart 
+//changed Spaceships to be animated fish

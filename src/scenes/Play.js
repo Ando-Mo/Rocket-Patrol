@@ -5,13 +5,16 @@ class Play extends Phaser.Scene {
 
     preload(){
         //load images
-        this.load.image('rocket', './assets/rocket.png');
+        this.load.image('dart', './assets/dart.png');
         this.load.image('spaceship', './assets/spaceship.png');
 
         this.load.spritesheet('spaceship_idle', './assets/fish-idle.png', {frameWidth: 29, frameHeight: 13, startFrame: 0, endFrame: 1});
 
+        this.load.spritesheet('clown_throw', './assets/clown_throw.png', {frameWidth: 92, frameHeight: 79, startFrame: 0, endFrame: 1}); 
+
         this.load.spritesheet('explosion', './assets/fish-idle.png', {frameWidth: 29, frameHeight: 13, startFrame: 0, endFrame: 1});
         
+
         this.load.image('starfield', './assets/starfield.png');
     }
 
@@ -30,26 +33,15 @@ class Play extends Phaser.Scene {
         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
 
         //add rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
+        this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'dart').setOrigin(0.5, 0);
+
         //add spaceships of varying point values & positions: 
-
-        //------------MY INSANE ATTEMPTS AT LOOPING ANIMATIONS (NOT WORKING)-------------------------------------------------------
-        //add ship 1
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship_idle', 9, 30).setOrigin(0,0);
-        
-        //add animation
-        this.anims.create({ //how do I make it loop?
-            key: 'spaceship_idle',
-            frames: this.anims.generateFrameNumbers('spaceship_idle', {start: 0, end: 1, first: 0}), 
-            frameRate: 8, 
-            repeat: -1
-        });
+        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship_idle', 0, 20).setOrigin(0,0);
+        this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship_idle', 0, 10).setOrigin(0,0);
 
-        this.ship01.anims.play(('spaceship_idle'));
-        //--------------------------------------------------------------------
-
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0,0);
+        //add clown
+        this.clown01 = new Clown(this, game.config.width - borderUISize*3, borderUISize*6, 'clown_throw', 1).setOrigin(0); 
 
         //define keys: 
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -58,14 +50,33 @@ class Play extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         //animation config:
-
+        this.anims.create({ 
+            key: 'spaceship_idle',
+            frames: this.anims.generateFrameNumbers('spaceship_idle', {start: 0, end: 1, first: 0}), 
+            frameRate: 8, 
+            repeat: -1
+        });
         
+        this.anims.create({ 
+            key: 'clown_throw',
+            frames: this.anims.generateFrameNumbers('clown_throw', {start: 0, end: 1, first: 0}), 
+            frameRate: 4, 
+            repeat: -1
+        });
 
         this.anims.create({
             key: 'explode',
             frames: this.anims.generateFrameNumbers('explosion', {start: 0, end: 1, first: 0}), 
             frameRate: 10
         });
+
+        //play the spaceship's looping animations
+        this.ship01.anims.play(('spaceship_idle'));
+        this.ship02.anims.play(('spaceship_idle'));
+        this.ship03.anims.play(('spaceship_idle'));
+
+        //play clown's looping animation
+        this.clown01.anims.play(('clown_throw'));
 
         //init score
         this.p1Score = 0;
@@ -83,7 +94,6 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
-
 
         //GAME OVER FLAG:
         this.gameOver = false;
