@@ -107,18 +107,19 @@ class Play extends Phaser.Scene {
         this.p1Score = 0;
         //display score
         let scoreConfig = {
-            fontFamily: 'Courier',
-            fontSize: '28px', 
-            backgroundColor: '#F3B141',
-            color: '#843605', 
-            align: 'right', 
-            padding: {
-                top: 5,
-                bottom: 5,
-            }, 
-            fixedWidth: 100
-        }
+            fontFamily: 'VastShadow-Regular',
+            fontSize: '28px',
+            backgroundColor: '#fffaf0 ',
+            color: '#f9346c',
+            align: 'right',
+            padding:{
+              top: 5,
+              bottom: 5,
+            },
+            fixedWidth: 0
+          }
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
+        
 
         //GAME OVER FLAG:
         this.gameOver = false;
@@ -126,14 +127,22 @@ class Play extends Phaser.Scene {
         //60 second play clock
         scoreConfig.fixedWidth = 0; 
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5); 
+            this.add.text(game.config.width/2, game.config.height/2, 'Nice shooting!', scoreConfig).setOrigin(0.5); 
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
 
+
+        //countdown timer event
+        scoreConfig.color = '#000000';
+        scoreConfig.backgroundColor = '#55AA80';
+        this.timer = this.add.text(game.config.width - borderUISize*3, borderUISize + borderPadding*2, this.clock.getRemainingSeconds(), scoreConfig);
     }
 
     update(){
+        //timer gets updated with rounded value
+        this.timer.setText(parseInt(this.clock.getRemainingSeconds()));
+        
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)){
             this.scene.restart();
         }
