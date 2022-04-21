@@ -7,12 +7,15 @@ class Play extends Phaser.Scene {
         //load images
         this.load.image('dart', './assets/dart.png');
         this.load.image('spaceship', './assets/spaceship.png');
+        this.load.image('spacePie', './assets/spacePie.png');
 
         this.load.spritesheet('spaceship_idle', './assets/fish-idle.png', {frameWidth: 29, frameHeight: 13, startFrame: 0, endFrame: 1});
 
         this.load.spritesheet('clown_throw', './assets/clown_throw.png', {frameWidth: 92, frameHeight: 79, startFrame: 0, endFrame: 1}); 
 
         this.load.spritesheet('explosion', './assets/fish-explode.png', {frameWidth: 44, frameHeight: 36, startFrame: 0, endFrame: 2});
+
+        this.load.spritesheet('pie_explosion', './assets/pie_explode.png', {frameWidth: 31, frameHeight: 37, startFrame: 0, endFrame: 3});
 
         this.load.image('starfield', './assets/mock-up.png');
     }
@@ -21,13 +24,13 @@ class Play extends Phaser.Scene {
         //place tile sprite
         this.starfield = this.add.tileSprite(0, -30, 640, 480, 'starfield').setOrigin(0,0);
 
-        //green UI 
-        //this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0)
-
         //add spaceships of varying point values & positions: 
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship_idle', 9, 30).setOrigin(0,0);
+        this.ship01 = new Spaceship(this, game.config.width, borderUISize*6 + borderUISize*4, 'spaceship_idle', 0, 10);
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship_idle', 0, 20).setOrigin(0,0);
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship_idle', 0, 10).setOrigin(0,0);
+        
+        //add spacePie
+        this.pie01 = new SpacePie(this, game.config.width + borderUISize*6, borderUISize*4, 'spacePie', 9, 30).setOrigin(0,0 ).setOrigin(0,0);
 
         //reconifigure size and shape of spaceships (fish)
         let shipSize = 1.5;
@@ -91,7 +94,13 @@ class Play extends Phaser.Scene {
 
         this.anims.create({
             key: 'explode',
-            frames: this.anims.generateFrameNumbers('explosion', {start: 0, end: 1, first: 0}), 
+            frames: this.anims.generateFrameNumbers('explosion', {start: 0, end: 2, first: 0}), 
+            frameRate: 8
+        });
+
+        this.anims.create({
+            key: 'pie_explode',
+            frames: this.anims.generateFrameNumbers('pie_explosion', {start: 0, end: 3, first: 0}), 
             frameRate: 10
         });
 
@@ -158,9 +167,15 @@ class Play extends Phaser.Scene {
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
+            this.pie01.update();
         }
         
         //check collisions
+        if(this.checkCollision(this.p1Rocket, this.pie01)){
+            console.log('kaboom ship 03');
+            this.p1Rocket.reset();
+            this.pieExplode(this.pie01);
+        }
         if(this.checkCollision(this.p1Rocket, this.ship03)){
             console.log('kaboom ship 03');
             this.p1Rocket.reset();
@@ -180,6 +195,7 @@ class Play extends Phaser.Scene {
         this.getThrown(this.ship01);
         this.getThrown(this.ship02);
         this.getThrown(this.ship03);
+        this.getThrown(this.pie01);
 
     }
 
@@ -203,6 +219,7 @@ class Play extends Phaser.Scene {
             ship.alpha = 1;
         }
     }
+    
     shipExplode(ship){
         //temporarily hide ship
         ship.alpha = 0; 
@@ -221,4 +238,24 @@ class Play extends Phaser.Scene {
         //explosion sfx
         this.sound.play('sfx_explosion');
     }
+
+    pieExplode(ship){
+        //temporarily hide ship
+        ship.alpha = 0; 
+        //create explosion sprite at ship's position
+        let boom = this.add.sprite(ship.x, ship.y, 'pie_explosion').setOrigin(0.2,0.2);
+        boom.scale *= 1.5;
+        boom.anims.play('pie_explode'); //play explode animation
+        boom.on('animationcomplete', () => { //callback after animation completes
+            ship.reset(); //reset ship position
+            boom.destroy(); //remove explosion sprite
+        });
+        //score add & repaint
+        this.p1Score += ship.points;
+        this.scoreLeft.text = this.p1Score;
+
+        //explosion sfx
+        this.sound.play('sfx_select');
+    }
+    
 }
