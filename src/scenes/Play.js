@@ -12,18 +12,17 @@ class Play extends Phaser.Scene {
 
         this.load.spritesheet('clown_throw', './assets/clown_throw.png', {frameWidth: 92, frameHeight: 79, startFrame: 0, endFrame: 1}); 
 
-        this.load.spritesheet('explosion', './assets/fish-idle.png', {frameWidth: 29, frameHeight: 13, startFrame: 0, endFrame: 1});
-        
+        this.load.spritesheet('explosion', './assets/fish-explode.png', {frameWidth: 44, frameHeight: 36, startFrame: 0, endFrame: 2});
 
-        this.load.image('starfield', './assets/starfield.png');
+        this.load.image('starfield', './assets/mock-up.png');
     }
 
     create(){
         //place tile sprite
-        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0,0);
+        this.starfield = this.add.tileSprite(0, -30, 640, 480, 'starfield').setOrigin(0,0);
 
         //green UI 
-        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0)
+        //this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0)
 
         //add spaceships of varying point values & positions: 
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship_idle', 9, 30).setOrigin(0,0);
@@ -31,17 +30,18 @@ class Play extends Phaser.Scene {
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship_idle', 0, 10).setOrigin(0,0);
 
         //reconifigure size and shape of spaceships (fish)
-        this.ship01.scale *= 1.5;
-        this.ship01.width *= 1.5;
-        this.ship01.height *= 1.5;
+        let shipSize = 1.5;
+        this.ship01.scale *= shipSize;
+        this.ship01.width *= shipSize;
+        this.ship01.height *= shipSize;
 
-        this.ship02.scale *= 1.5;
-        this.ship02.width *= 1.5;
-        this.ship02.height *= 1.5;
+        this.ship02.scale *= shipSize;
+        this.ship02.width *= shipSize;
+        this.ship02.height *= shipSize;
 
-        this.ship03.scale *= 1.5;
-        this.ship03.width *= 1.5;
-        this.ship03.height *= 1.5;
+        this.ship03.scale *= shipSize;
+        this.ship03.width *= shipSize;
+        this.ship03.height *= shipSize;
 
          //white border
          this.add.rectangle(0,0,game.config.width, borderUISize, 0xFFFFFF).setOrigin(0,0);
@@ -49,16 +49,24 @@ class Play extends Phaser.Scene {
  
          this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
          this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
-        //add rocket
+        
+         //add rocket
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'dart').setOrigin(0.5, 0);
+
+        //reconifigure size and shape of spaceships (fish)
+        let rocketSize = 1.5;
+        this.p1Rocket.scale *= rocketSize;
+        this.p1Rocket.width *= rocketSize;
+        this.p1Rocket.height *= rocketSize;
 
         //add clown
         this.clown01 = new Clown(this, game.config.width - borderUISize*3, borderUISize*6, 'clown_throw', 1).setOrigin(0.25,0.25); 
 
         //reconfigure clown size
-        this.clown01.scale *= 1.1;
-        this.clown01.width *= 1.1;
-        this.clown01.height *= 1.1;
+        let clownSize = 1.3;
+        this.clown01.scale *= clownSize;
+        this.clown01.width *= clownSize;
+        this.clown01.height *= clownSize;
 
         //define keys: 
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -134,7 +142,8 @@ class Play extends Phaser.Scene {
             this.scene.start("menuScene");
         }
 
-        this.starfield.tilePositionX -= 4;
+        //this.starfield.tilePositionX -= 4;
+        
         if(!this.gameOver){
             this.p1Rocket.update();
             this.ship01.update();
@@ -189,7 +198,8 @@ class Play extends Phaser.Scene {
         //temporarily hide ship
         ship.alpha = 0; 
         //create explosion sprite at ship's position
-        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
+        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0.2,0.2);
+        boom.scale *= 1.5;
         boom.anims.play('explode'); //play explode animation
         boom.on('animationcomplete', () => { //callback after animation completes
             ship.reset(); //reset ship position
