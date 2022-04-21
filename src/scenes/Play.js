@@ -26,11 +26,11 @@ class Play extends Phaser.Scene {
 
         //add spaceships of varying point values & positions: 
         this.ship01 = new Spaceship(this, game.config.width, borderUISize*6 + borderUISize*4, 'spaceship_idle', 0, 10);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship_idle', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship_idle', 0, 10).setOrigin(0,0);
+        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship_idle', 0, 30).setOrigin(0,0);
+        this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship_idle', 0, 20).setOrigin(0,0);
         
         //add spacePie
-        this.pie01 = new SpacePie(this, game.config.width + borderUISize*6, borderUISize*4, 'spacePie', 9, 30).setOrigin(0,0 ).setOrigin(0,0);
+        this.pie01 = new SpacePie(this, game.config.width + borderUISize*6, borderUISize*4, 'spacePie', 9, 50).setOrigin(0,0 ).setOrigin(0,0);
 
         //reconifigure size and shape of spaceships (fish)
         let shipSize = 1.5;
@@ -149,6 +149,8 @@ class Play extends Phaser.Scene {
     }
 
     update(){
+
+        console.log("x: ", this.pie01.x, "y: ", this.pie01.y);
         //timer gets updated with rounded value
         this.timer.setText(parseInt(this.clock.getRemainingSeconds()));
         
@@ -213,7 +215,7 @@ class Play extends Phaser.Scene {
     }
     getThrown(ship){
         //input a ship, and see if the clown needs to be moved to that position
-        if(ship.x == game.config.width - borderUISize*3){
+        if(ship.x > game.config.width - borderUISize*3 && ship.x <= game.config.width - borderUISize*3 + 7){
             this.clown01.x = ship.x; 
             this.clown01.y = ship.y;
             ship.alpha = 1;
